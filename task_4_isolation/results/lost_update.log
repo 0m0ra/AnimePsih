@@ -1,0 +1,26 @@
+[    8.7 ms]  -- | 
+======================================================================
+LOST UPDATE — plain SELECT (race)
+======================================================================
+[   15.1 ms]  T1 | BEGIN (READ COMMITTED)
+[   15.9 ms]  T1 | SELECT balance FROM accounts WHERE id = 1 -> 1000
+[   21.6 ms]  T2 | BEGIN (READ COMMITTED)
+[   21.9 ms]  T2 | SELECT balance FROM accounts WHERE id = 1 -> 1000
+[   22.2 ms]  T2 | UPDATE balance = 1000 + 50 = 1050
+[   23.6 ms]  T1 | UPDATE balance = 1000 + 100 = 1100
+[   23.6 ms]  T2 | COMMIT
+[   24.1 ms]  T1 | COMMIT
+[   30.9 ms]  -- | ANOMALY:   final balance = 1100, expected 1150 (an update was lost)
+[   40.6 ms]  -- | 
+======================================================================
+LOST UPDATE — with SELECT ... FOR UPDATE
+======================================================================
+[   46.9 ms]  T1 | BEGIN (READ COMMITTED)
+[   47.6 ms]  T1 | SELECT balance FROM accounts WHERE id = 1 FOR UPDATE -> 1000
+[   48.0 ms]  T1 | UPDATE balance = 1000 + 100 = 1100
+[   48.6 ms]  T1 | COMMIT
+[   54.6 ms]  T2 | BEGIN (READ COMMITTED)
+[   55.6 ms]  T2 | SELECT balance FROM accounts WHERE id = 1 FOR UPDATE -> 1100
+[   56.0 ms]  T2 | UPDATE balance = 1100 + 50 = 1150
+[   56.7 ms]  T2 | COMMIT
+[   65.3 ms]  -- | PREVENTED: final balance = 1150 (= 1000 + 100 + 50)

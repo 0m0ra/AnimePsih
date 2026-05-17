@@ -1,0 +1,24 @@
+[    8.1 ms]  -- | 
+======================================================================
+NON-REPEATABLE READ — T1 @ READ COMMITTED
+======================================================================
+[   14.9 ms]  T1 | BEGIN (READ COMMITTED)
+[   15.7 ms]  T1 | SELECT balance WHERE id=1 -> 1000
+[   23.6 ms]  T2 | BEGIN (READ COMMITTED)
+[   24.5 ms]  T2 | UPDATE balance=1500 WHERE id=1
+[   26.4 ms]  T2 | COMMIT
+[   26.9 ms]  T1 | SELECT balance WHERE id=1 -> 1500 (re-read)
+[   27.1 ms]  T1 | COMMIT
+[   27.2 ms]  -- | ANOMALY: first=1000 second=1500
+[   36.8 ms]  -- | 
+======================================================================
+NON-REPEATABLE READ — T1 @ REPEATABLE READ
+======================================================================
+[   44.3 ms]  T1 | BEGIN (REPEATABLE READ)
+[   45.0 ms]  T1 | SELECT balance WHERE id=1 -> 1000
+[   52.0 ms]  T2 | BEGIN (READ COMMITTED)
+[   52.9 ms]  T2 | UPDATE balance=1500 WHERE id=1
+[   54.5 ms]  T2 | COMMIT
+[   55.0 ms]  T1 | SELECT balance WHERE id=1 -> 1000 (re-read)
+[   55.2 ms]  T1 | COMMIT
+[   55.3 ms]  -- | PREVENTED: both reads = 1000 (snapshot held)

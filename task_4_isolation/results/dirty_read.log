@@ -1,0 +1,11 @@
+[    0.0 ms]  -- | 
+======================================================================
+DIRTY READ — PostgreSQL @ READ UNCOMMITTED
+======================================================================
+[   10.9 ms]  T1 | BEGIN (READ UNCOMMITTED)
+[   11.7 ms]  T1 | UPDATE balance=9999 WHERE id=1 -> 9999 (NOT committed)
+[   19.5 ms]  T2 | BEGIN (READ UNCOMMITTED)
+[   20.3 ms]  T2 | SELECT balance WHERE id=1 -> 1000
+[   20.5 ms]  T2 | verdict: PREVENTED (no dirty read)
+[   20.6 ms]  T1 | ROLLBACK (discarding update)
+[   27.6 ms]  -- | final committed balance = 1000 (T1 rolled back -> 1000 expected)

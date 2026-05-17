@@ -1,0 +1,24 @@
+[    6.9 ms]  -- | 
+======================================================================
+PHANTOM READ — T1 @ READ COMMITTED
+======================================================================
+[   13.5 ms]  T1 | BEGIN (READ COMMITTED)
+[   14.5 ms]  T1 | SELECT COUNT(*) WHERE category='books' -> 3
+[   20.7 ms]  T2 | BEGIN (READ COMMITTED)
+[   21.2 ms]  T2 | INSERT INTO products ('books','Phantom Book',99)
+[   22.7 ms]  T2 | COMMIT
+[   23.0 ms]  T1 | SELECT COUNT(*) WHERE category='books' -> 4 (re-read)
+[   23.1 ms]  T1 | COMMIT
+[   23.2 ms]  -- | ANOMALY: first=3 second=4 (phantom appeared)
+[   29.6 ms]  -- | 
+======================================================================
+PHANTOM READ — T1 @ REPEATABLE READ
+======================================================================
+[   36.2 ms]  T1 | BEGIN (REPEATABLE READ)
+[   37.0 ms]  T1 | SELECT COUNT(*) WHERE category='books' -> 3
+[   44.3 ms]  T2 | BEGIN (READ COMMITTED)
+[   45.1 ms]  T2 | INSERT INTO products ('books','Phantom Book',99)
+[   46.7 ms]  T2 | COMMIT
+[   47.2 ms]  T1 | SELECT COUNT(*) WHERE category='books' -> 3 (re-read)
+[   47.3 ms]  T1 | COMMIT
+[   47.4 ms]  -- | PREVENTED: both counts = 3 (snapshot held)
