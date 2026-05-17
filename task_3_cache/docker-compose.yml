@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15
+    container_name: cache_demo_db
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [cache_net]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: cache_demo_redis
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [cache_net]
+
+  app:
+    build: .
+    container_name: cache_demo_app
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql+psycopg2://app:app@db:5432/appdb
+      REDIS_URL: redis://redis:6379/0
+      CACHE_STRATEGY: ${CACHE_STRATEGY:-cache_aside}
+      WRITEBACK_FLUSH_INTERVAL: ${WRITEBACK_FLUSH_INTERVAL:-2.0}
+      WRITEBACK_BATCH_SIZE: ${WRITEBACK_BATCH_SIZE:-200}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-300}
+    ports:
+      - "8000:8000"
+    networks: [cache_net]
+
+networks:
+  cache_net:
+    driver: bridge
+
+volumes:
+  pg_data:

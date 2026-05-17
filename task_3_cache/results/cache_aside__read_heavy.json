@@ -1,0 +1,57 @@
+{
+  "label": "cache_aside__read_heavy",
+  "config": {
+    "duration_sec_target": 15.0,
+    "workers": 16,
+    "keys": 1000,
+    "read_ratio": 0.8
+  },
+  "client": {
+    "client_requests": 19940,
+    "client_reads": 15902,
+    "client_writes": 4038,
+    "client_errors": 0,
+    "client_not_found": 0,
+    "client_throughput_rps": 1328.6950759632825,
+    "client_avg_latency_ms": 12.018919841271334,
+    "client_p50_latency_ms": 11.235296999984712,
+    "client_p95_latency_ms": 21.385254000051646,
+    "client_p99_latency_ms": 28.45740599968849,
+    "client_max_latency_ms": 72.97307400040154
+  },
+  "server_during": {
+    "elapsed_sec": 15.018129825592041,
+    "request_count": 19940,
+    "throughput_rps": 1327.728567509166,
+    "avg_latency_ms": 2.0892657615885972,
+    "max_latency_ms": 36.48649899969314,
+    "cache_hits": 12840,
+    "cache_misses": 3062,
+    "cache_hit_rate": 0.8074456043264998,
+    "db_reads": 3062,
+    "db_writes": 4038,
+    "db_total": 7100,
+    "writeback_flushes": 0,
+    "writeback_flushed_keys": 0,
+    "strategy": "cache_aside"
+  },
+  "server_after_flush": {
+    "elapsed_sec": 15.028185844421387,
+    "request_count": 19940,
+    "throughput_rps": 1326.8401260423545,
+    "avg_latency_ms": 2.0892657615885972,
+    "max_latency_ms": 36.48649899969314,
+    "cache_hits": 12840,
+    "cache_misses": 3062,
+    "cache_hit_rate": 0.8074456043264998,
+    "db_reads": 3062,
+    "db_writes": 4038,
+    "db_total": 7100,
+    "writeback_flushes": 0,
+    "writeback_flushed_keys": 0,
+    "strategy": "cache_aside"
+  },
+  "writeback_pending_before_flush": 0,
+  "writeback_flushed_post_run": 0,
+  "wall_clock_sec": 15.007205461000012
+}
